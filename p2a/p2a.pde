@@ -3,7 +3,7 @@
 import processing.opengl.*;
 
 float time = 0;  // keep track of passing of time
-final int CAMERA_DISTANCE = 120;
+final int CAMERA_DISTANCE = 130;
 
 float xRotate = -PI / 6;
 float yRotate = PI / 6;
@@ -133,12 +133,6 @@ void draw() {
   hexPrism(20, 20, 15);
   popMatrix();
   
-  //main gun structure
-  pushMatrix();
-  translate(0, -16, 30);
-  rectPrism(18, 4, 30);
-  popMatrix();
-  
   fill(SECONDARY_COLOR);
   
   //blue emblem on top
@@ -147,32 +141,9 @@ void draw() {
   trapPrism(10, 2, 15);
   popMatrix();
   
-  //blue ramp from hex to gun
   pushMatrix();
-  translate(0, -19, 20);
-  rotate(-PI/10, 1, 0, 0);
-  trapPrism(8, 4, 14);
-  popMatrix();
-  
-  //blue decorations on left gun side
-  pushMatrix();
-  translate(-9, -16, 34);
-  rotate(-PI/2, 0, 0, 1);
-  trapPrism(3, 8, 20);
-  popMatrix();
-  
-  //blue decorations on right gun side
-  pushMatrix();
-  translate(9, -16, 34);
-  rotate(PI/2, 0, 0, 1);
-  trapPrism(3, 8, 20);
-  popMatrix();
-  
-  //black protrusion from end of gun
-  fill(TIRE_COLOR);
-  pushMatrix();
-  translate(0, -16, 45);
-  rectPrism(16, 2, 2);
+  translate(0, -16, 30);
+  gun();
   popMatrix();
   
   //pop rotation matrix
@@ -419,5 +390,47 @@ void tireAndCasing()
   translate(0, -7, 0);
   rotate(PI/2, 0, 1, 0);
   trapPrism(8, 2, 8);
+  popMatrix();
+}
+
+void gun()
+{
+  
+  fill(PRIMARY_COLOR);
+  
+  //main gun arm
+  pushMatrix();
+  translate(0, 0, 0);
+  rectPrism(18, 4, 30);
+  popMatrix();
+  
+  fill(SECONDARY_COLOR);
+  
+  //blue ramp from hex to gun
+  pushMatrix();
+  translate(0, -3, -10);
+  rotate(-PI/10, 1, 0, 0);
+  trapPrism(8, 4, 14);
+  popMatrix();
+  
+  //blue decorations on left gun side
+  pushMatrix();
+  translate(-9, 0, 4);
+  rotate(-PI/2, 0, 0, 1);
+  trapPrism(3, 8, 20);
+  popMatrix();
+  
+  //blue decorations on right gun side
+  pushMatrix();
+  translate(9, 0, 4);
+  rotate(PI/2, 0, 0, 1);
+  trapPrism(3, 8, 20);
+  popMatrix();
+  
+  //black protrusion from end of gun
+  fill(TIRE_COLOR);
+  pushMatrix();
+  translate(0, 0, 15);
+  rectPrism(16, 2, 2);
   popMatrix();
 }
