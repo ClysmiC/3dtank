@@ -5,13 +5,13 @@ import processing.opengl.*;
 float time = 0;  // keep track of passing of time
 final int CAMERA_DISTANCE = 120;
 
-float xRotate = 0;
-float yRotate = 0;
+float xRotate = -PI / 6;
+float yRotate = PI / 6;
 boolean mouseDown = false;
 
-final int PRIMARY_COLOR = 0xC8C8C8FF;
-final int SECONDARY_COLOR = 0x3232F0FF;
-final int TIRE_COLOR = 0x787878FF;
+final int PRIMARY_COLOR = 0xFFB0B0B0;
+final int SECONDARY_COLOR = 0xFF3232F0;
+final int TIRE_COLOR = 0xFF222222;
 
 void setup() {
   size(700, 700, P3D);  // must use 3D here !!!
@@ -34,8 +34,8 @@ void keyPressed()
   //resets camera
   if (key == ' ')
   {
-    xRotate = 0;
-    yRotate = 0;
+    xRotate = -PI/6;
+    yRotate = PI/6;
   }
 }
 
@@ -76,9 +76,9 @@ void draw() {
   ambientLight (102, 102, 102);
   
   // create two directional light sources
-  lightSpecular (204, 204, 204);
-  directionalLight (102, 102, 102, -0.7, -0.7, -1);
-  directionalLight (152, 152, 152, 0, 0, -1);
+  lightSpecular (150, 150, 150);
+  directionalLight (102, 102, 102, 1, 0.7, .2);
+  directionalLight (102, 102, 102, 1, .7, .2);
   
   //rotate EVERYTHING by xRotate and yRotate, to allow for arbitrary-ish rotation by user
   pushMatrix();
@@ -111,22 +111,68 @@ void draw() {
   popMatrix();
   
   //flat hex prism connecting wheels
+  fill(PRIMARY_COLOR);
   pushMatrix();
+  translate(0, -5, 0);
   rotate(PI/2, 1, 0, 0);
-  hexPrism(10, 10, 5);
+  rotate(2 * PI / 12f, 0, 0, 1);
+  hexPrism(25, 25, 8);
   popMatrix();
   
-  // Draw a sphere
-  
+  //long hex prism between front and back tires
   pushMatrix();
+  translate(0, -4, 0);
+  rotate(PI/2, 0, 1, 0);
+  hexPrism(42, 8, 24);
+  popMatrix();
   
-  ambient (50, 50, 50);
-  specular (155, 155, 155);
-  shininess (15.0);
+  //hex prism sitting on top to shoot the gun
+  pushMatrix();
+  translate(0, -14, 0);
+  rotate(PI/2, 1, 0, 0);
+  hexPrism(20, 20, 15);
+  popMatrix();
   
-  sphereDetail (40);
-  sphere (5);
-
+  //main gun structure
+  pushMatrix();
+  translate(0, -16, 30);
+  rectPrism(18, 4, 30);
+  popMatrix();
+  
+  fill(SECONDARY_COLOR);
+  
+  //blue emblem on top
+  pushMatrix();
+  translate(0, -22, 0);
+  trapPrism(10, 2, 15);
+  popMatrix();
+  
+  //blue ramp from hex to gun
+  pushMatrix();
+  translate(0, -19, 20);
+  rotate(-PI/10, 1, 0, 0);
+  trapPrism(8, 4, 14);
+  popMatrix();
+  
+  //blue decorations on left gun side
+  pushMatrix();
+  translate(-9, -16, 34);
+  rotate(-PI/2, 0, 0, 1);
+  trapPrism(3, 8, 20);
+  popMatrix();
+  
+  //blue decorations on right gun side
+  pushMatrix();
+  translate(9, -16, 34);
+  rotate(PI/2, 0, 0, 1);
+  trapPrism(3, 8, 20);
+  popMatrix();
+  
+  //black protrusion from end of gun
+  fill(TIRE_COLOR);
+  pushMatrix();
+  translate(0, -16, 45);
+  rectPrism(16, 2, 2);
   popMatrix();
   
   //pop rotation matrix
@@ -268,6 +314,72 @@ void hexPrism(float xScale, float yScale, float zScale)
   popMatrix();
 }
 
+//draws a trapezoid prism-- at 1 scale it will have 3 sides
+//of length 1, and the bottom side of length 2
+void trapPrism(float xScale, float yScale, float zScale)
+{
+  pushMatrix();
+  scale(xScale, yScale, zScale);
+  
+  //front face
+  beginShape();
+  vertex(-.5, -.5, .5);
+  vertex(-1, .5, .5);
+  vertex(1, .5, .5);
+  vertex(.5, -.5, .5);
+  endShape(CLOSE);
+  
+  //back face
+  beginShape();
+  vertex(-.5, -.5, -.5);
+  vertex(-1, .5, -.5);
+  vertex(1, .5, -.5);
+  vertex(.5, -.5, -.5);
+  endShape(CLOSE);
+  
+  //top face
+  beginShape();
+  vertex(-.5, -.5, .5);
+  vertex(.5, -.5, .5);
+  vertex(.5, -.5, -.5);
+  vertex(-.5, -.5, -.5);
+  endShape(CLOSE);
+  
+  //left face
+  beginShape();
+  vertex(-.5, -.5, .5);
+  vertex(-1, .5, .5);
+  vertex(-1, .5, -.5);
+  vertex(-.5, -.5, -.5);
+  endShape(CLOSE);
+  
+  //bottom face
+  beginShape();
+  vertex(-1, .5, .5);
+  vertex(1, .5, .5);
+  vertex(1, .5, -.5);
+  vertex(-1, .5, -.5);
+  endShape(CLOSE);
+  
+  //right face
+  beginShape();
+  vertex(.5, -.5, .5);
+  vertex(1, .5, .5);
+  vertex(1, .5, -.5);
+  vertex(.5, -.5, -.5);
+  endShape(CLOSE);
+  
+  popMatrix();
+}
+
+//void octPrism(float xScale, float yScale, float zScale)
+//{
+//  pushMatrix();
+//  scale(xScale, yScale, zScale);
+  
+//  popMatrix();
+//}
+
 void tireAndCasing()
 {
   fill(TIRE_COLOR);
@@ -295,17 +407,17 @@ void tireAndCasing()
   
   //back of white casing
   pushMatrix();
-  translate(6, 0, -12);
+  translate(6.5, 0, -12);
   rotate(PI/2, 0, 0, 1);
-  cylinder(5, 12, 20);
+  cylinder(5, 13, 20);
   popMatrix();
   
   fill(SECONDARY_COLOR);
   
   //blue emblem on casing
   pushMatrix();
-  translate(0, -6, 5);
-  rotate(-PI/16, 1, 0, 0);
-  rectPrism(9, 2, 12);
+  translate(0, -7, 0);
+  rotate(PI/2, 0, 1, 0);
+  trapPrism(8, 2, 8);
   popMatrix();
 }
