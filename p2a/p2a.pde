@@ -9,6 +9,10 @@ float xRotate = 0;
 float yRotate = 0;
 boolean mouseDown = false;
 
+final int PRIMARY_COLOR = 0xC8C8C8FF;
+final int SECONDARY_COLOR = 0x3232F0FF;
+final int TIRE_COLOR = 0x787878FF;
+
 void setup() {
   size(700, 700, P3D);  // must use 3D here !!!
   noStroke();           // do not draw the edges of polygons
@@ -80,11 +84,6 @@ void draw() {
   pushMatrix();
   rotateDueToMouse();
   
-  pushMatrix();
-  translate(0, 10, 0);
-  hexPrism(5, 5, 5);
-  popMatrix();
-  
   //front right tire
   pushMatrix();
   translate(-20, 0, 30);
@@ -109,6 +108,12 @@ void draw() {
   translate(20, 0, -30);
   rotate(PI, 0, 1, 0);
   tireAndCasing();
+  popMatrix();
+  
+  //flat hex prism connecting wheels
+  pushMatrix();
+  rotate(PI/2, 1, 0, 0);
+  hexPrism(10, 10, 5);
   popMatrix();
   
   // Draw a sphere
@@ -265,9 +270,10 @@ void hexPrism(float xScale, float yScale, float zScale)
 
 void tireAndCasing()
 {
+  fill(TIRE_COLOR);
+  
   //black tire tread
   pushMatrix();
-  fill(120, 120, 120);
   translate(0, 0, 0);
   rectPrism(10, 10, 26);
   popMatrix();
@@ -276,28 +282,28 @@ void tireAndCasing()
   pushMatrix();
   translate(5, 0, 13);
   rotate(PI / 2, 0, 0, 1);
-  fill(120, 120, 120);
   cylinder(5, 10, 20);
   popMatrix();
   
+  fill(PRIMARY_COLOR);
+  
   //white casing over tire
   pushMatrix();
-  fill(200, 200, 200);
   translate(0, -3, -2);
   rectPrism(13, 7, 30);
   popMatrix();
   
   //back of white casing
   pushMatrix();
-  fill(200, 200, 200);
   translate(6, 0, -12);
   rotate(PI/2, 0, 0, 1);
   cylinder(5, 12, 20);
   popMatrix();
   
+  fill(SECONDARY_COLOR);
+  
   //blue emblem on casing
   pushMatrix();
-  fill(50, 50, 240);
   translate(0, -6, 5);
   rotate(-PI/16, 1, 0, 0);
   rectPrism(9, 2, 12);
