@@ -2,20 +2,27 @@
 
 import processing.opengl.*;
 
-float time = 0;  // keep track of passing of time
+float lastFreeRotateTime = 0;
 final int CAMERA_DISTANCE = 130;
 
 float xRotate = -PI / 6;
 float yRotate = PI / 6;
+boolean freeRotateMode = false;
 boolean mouseDown = false;
 
 final int PRIMARY_COLOR = 0xFFB0B0B0;
 final int SECONDARY_COLOR = 0xFF3232F0;
 final int TIRE_COLOR = 0xFF222222;
 
+PFont font;
+
 void setup() {
   size(700, 700, P3D);  // must use 3D here !!!
   noStroke();           // do not draw the edges of polygons
+  
+  font = createFont("Sans-Serif", 100);
+  textFont(font);
+  textSize(4);
 }
 
 //allow for arbitrary rotation except for Z axis (better for viewing)
@@ -37,21 +44,32 @@ void keyPressed()
     xRotate = -PI/6;
     yRotate = PI/6;
   }
+  else if (keyCode == SHIFT)
+  {
+    freeRotateMode = !freeRotateMode;
+  }
 }
 
 void rotateDueToMouse()
 {
   //fires max 100 times per second
-  if(mouseDown && millis() - time >= 10)
+  if(freeRotateMode)
   {
-    //location of click where origin is center of screen
-    int xLoc = mouseX - width / 2;
-    int yLoc = -(mouseY - height / 2);
-    
-    yRotate += (xLoc / 5000f);
-    xRotate += (yLoc / 5000f);
-    
-    time = millis();
+    if(mouseDown && millis() - lastFreeRotateTime >= 10)
+    {
+      //location of click where origin is center of screen
+      int xLoc = mouseX - width / 2;
+      int yLoc = -(mouseY - height / 2);
+      
+      yRotate += (xLoc / 5000f);
+      xRotate += (yLoc / 5000f);
+      
+      lastFreeRotateTime = millis();
+    }
+  }
+  else
+  {
+    yRotate += .03;
   }
   
   rotate(xRotate, 1, 0, 0);
@@ -148,6 +166,9 @@ void draw() {
   
   //pop rotation matrix
   popMatrix();
+  
+  fill(0xFFFFFFFF);
+  text("SHIFT to toggle free-rotate mode\nSPACEBAR to reset camera\nCLICK to rotate in free-rotate mode", -30, 55);
 }
 
 // Draw a cylinder of a given radius, height and number of sides.
