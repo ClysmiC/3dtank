@@ -5,7 +5,7 @@ import processing.opengl.*;
 float lastFreeRotateTime = 0;
 final int CAMERA_DISTANCE = 130;
 
-float xRotate = -PI / 6;
+float xRotate = -PI / 9;
 float yRotate = PI / 6;
 boolean freeRotateMode = false;
 boolean mouseDown = false;
@@ -41,7 +41,7 @@ void keyPressed()
   //resets camera
   if (key == ' ')
   {
-    xRotate = -PI/6;
+    xRotate = -PI/9;
     yRotate = PI/6;
   }
   else if (keyCode == SHIFT)
@@ -69,7 +69,7 @@ void rotateDueToMouse()
   }
   else
   {
-    yRotate += .03;
+    yRotate -= .03;
   }
   
   rotate(xRotate, 1, 0, 0);
