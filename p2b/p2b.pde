@@ -4,11 +4,12 @@
 import processing.opengl.*;
 
 float lastFreeRotateTime = 0;
-final int CAMERA_DISTANCE = 130;
+final int CAMERA_DISTANCE = 150;
 
 float xRotate = -PI / 9;
 float yRotate = PI / 6;
 boolean mouseDown = false;
+boolean animForward = true;
 
 final int PRIMARY_COLOR = 0xFFB0B0B0;
 final int SECONDARY_COLOR = 0xFF3232F0;
@@ -43,6 +44,7 @@ void setup() {
   textFont(font);
   textSize(4);
   
+  animForward = true;
   animStartTime = -1;
   animStage1 = 0;
   animStage2 = 0;
@@ -71,6 +73,12 @@ void keyPressed()
   }
   else if (key == 'a')
   {
+    animForward = true;
+    animStartTime = millis();
+  }
+  else if (key == 's')
+  {
+    animForward = false;
     animStartTime = millis();
   }
 }
@@ -109,7 +117,13 @@ void draw() {
   else
   {
     int elapsedTime = millis() - animStartTime;
-    animStage1 = Math.min(1, (float)elapsedTime / STAGE_1_DURATION);
+    
+    if(!animForward)
+    {
+      elapsedTime = STAGE_1_DURATION + STAGE_2_DURATION + STAGE_3_DURATION + STAGE_4_DURATION - elapsedTime;
+    }
+    
+    animStage1 = Math.max(0, Math.min(1, (float)elapsedTime / STAGE_1_DURATION));
     animStage2 = Math.max(0, Math.min(1, ((float)elapsedTime - STAGE_1_DURATION) / STAGE_2_DURATION));
     animStage3 = Math.max(0, Math.min(1, ((float)elapsedTime - STAGE_1_DURATION - STAGE_2_DURATION) / STAGE_3_DURATION));
     animStage4 = Math.max(0, Math.min(1, ((float)elapsedTime - STAGE_1_DURATION - STAGE_2_DURATION - STAGE_3_DURATION) / STAGE_4_DURATION));
@@ -128,8 +142,8 @@ void draw() {
   
   // create two directional light sources
   lightSpecular (150, 150, 150);
-  directionalLight (102, 102, 102, 1, 0.7, .2);
-  directionalLight (102, 102, 102, 1, .7, .2);
+  directionalLight (102, 102, 102, 1, 0.7, -.2);
+  directionalLight (102, 102, 102, -1, 0.7, -.2);
   
   //rotate EVERYTHING by xRotate and yRotate, to allow for arbitrary-ish rotation by user
   pushMatrix();
@@ -397,7 +411,7 @@ void tireAndCasing(boolean frOrBl)
 void brace()
 { 
     int UNLOAD_DISTANCE = 16; //stage2
-    int UNLOAD_SHIFT_DOWN = 6; //stage3
+    int UNLOAD_SHIFT_DOWN = 4; //stage3
     float UNLOAD_ANGLE = PI/4; //stage3
     
     fill(TIRE_COLOR);
@@ -406,8 +420,8 @@ void brace()
 
       //3-part arm
       pushMatrix();
-        translate(0, 6, 0);
-        rectPrism(3, 12, 8);
+        translate(0, 15, 0);
+        rectPrism(3, 30, 10);
       popMatrix();
       
       pushMatrix();
@@ -416,12 +430,12 @@ void brace()
         pushMatrix();
           translate(-2, -3, 0);
           rotate(-PI/6, 0, 0, 1);
-          rectPrism(3, 9, 8);
+          rectPrism(3, 9, 10);
         popMatrix();
         
         pushMatrix();
           translate(-7, -6, 0);
-          rectPrism(8, 3, 8);
+          rectPrism(8, 3, 10);
         popMatrix();
         //end 3-part arm
         
@@ -429,7 +443,7 @@ void brace()
         pushMatrix();
           translate(-10, -6.5, 0);
           rotate(PI/2, 0, 1, 0);
-          trapPrism(8, 8, 3);
+          trapPrism(10, 8, 3);
         popMatrix();
       popMatrix();
     popMatrix();
