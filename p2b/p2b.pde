@@ -134,7 +134,6 @@ void draw() {
   //rotate EVERYTHING by xRotate and yRotate, to allow for arbitrary-ish rotation by user
   pushMatrix();
     rotateDueToMouse();
-  
     siegeTank();
   
   //pop rotation matrix
@@ -341,7 +340,7 @@ void trapPrism(float xScale, float yScale, float zScale)
 void tireAndCasing(boolean frOrBl)
 {
   final int EXTEND_DISTANCE = 6; //stage 1
-  final int SHIFT_DISTANCE = 4; //stage 3
+  final int SHIFT_DISTANCE = frOrBl ? -1 : 1; //stage 3
   final float ROTATE_SIDE = frOrBl ? -PI / 10 : PI / 10; //stage 3
   final float ROTATE_DOWN = -PI / 16; //stage 3
   
@@ -355,8 +354,8 @@ void tireAndCasing(boolean frOrBl)
     
     //black tire tread
     pushMatrix();
-      translate(0, 0, 0);
-      rectPrism(10, 10, 26);
+      translate(0, 0, -3);
+      rectPrism(10, 10, 32);
     popMatrix();
     
     //black tire (round part)
@@ -370,13 +369,13 @@ void tireAndCasing(boolean frOrBl)
     
     //white casing over tire
     pushMatrix();
-      translate(0, -3, -2);
-      rectPrism(13, 7, 30);
+      translate(0, -3, -5);
+      rectPrism(13, 7, 36);
     popMatrix();
     
     //back of white casing
     pushMatrix();
-      translate(6.5, 0, -12);
+      translate(6.5, 0, -18);
       rotate(PI/2, 0, 0, 1);
       cylinder(5, 13, 20);
     popMatrix();
@@ -385,12 +384,55 @@ void tireAndCasing(boolean frOrBl)
     
     //blue emblem on casing
     pushMatrix();
-      translate(0, -7, 0);
+      translate(0, -7, -3);
       rotate(PI/2, 0, 1, 0);
       trapPrism(8, 2, 8);
     popMatrix();
     
   popMatrix();
+}
+
+//braces that slide into place when entering siege mode
+//note: this method draws a brace oriented vertically-- the calling location should rotate it as desired
+void brace()
+{ 
+    int UNLOAD_DISTANCE = 16; //stage2
+    int UNLOAD_SHIFT_DOWN = 6; //stage3
+    float UNLOAD_ANGLE = PI/4; //stage3
+    
+    fill(TIRE_COLOR);
+    pushMatrix();
+      translate(-UNLOAD_SHIFT_DOWN * animStage3, -UNLOAD_DISTANCE * animStage2, 0);
+
+      //3-part arm
+      pushMatrix();
+        translate(0, 6, 0);
+        rectPrism(3, 12, 8);
+      popMatrix();
+      
+      pushMatrix();
+        rotate(UNLOAD_ANGLE, 0, 0, 1);
+        rotate(-UNLOAD_ANGLE * animStage3, 0, 0, 1);
+        pushMatrix();
+          translate(-2, -3, 0);
+          rotate(-PI/6, 0, 0, 1);
+          rectPrism(3, 9, 8);
+        popMatrix();
+        
+        pushMatrix();
+          translate(-7, -6, 0);
+          rectPrism(8, 3, 8);
+        popMatrix();
+        //end 3-part arm
+        
+        //trapezoid base
+        pushMatrix();
+          translate(-10, -6.5, 0);
+          rotate(PI/2, 0, 1, 0);
+          trapPrism(8, 8, 3);
+        popMatrix();
+      popMatrix();
+    popMatrix();
 }
 
 void gun()
@@ -513,6 +555,21 @@ void siegeTank()
       translate(0, -4, 0);
       rotate(PI/2, 0, 1, 0);
       hexPrism(42, 8, 24);
+    popMatrix();
+    
+    //right brace
+    pushMatrix();
+      translate(-10, -2, 0);
+      rotate(-PI/2, 0, 0, 1);
+      brace();
+    popMatrix();
+    
+    //left brace
+    pushMatrix();
+      translate(10, -2, 0);
+      rotate(PI/2, 0, 0, 1);
+      scale(-1, 1, 1); //reflect x
+      brace();
     popMatrix();
     
     pushMatrix();
