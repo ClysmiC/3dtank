@@ -1,4 +1,5 @@
-// 3D Scene Example
+// 3D Siege Tank
+// Author: Andrew Smith
 
 import processing.opengl.*;
 
@@ -92,7 +93,6 @@ void rotateDueToMouse()
   rotate(yRotate, 0, 1, 0);
 }
 
-// Draw a scene with a cylinder, a sphere and a box
 void draw() {
   
   resetMatrix();  // set the transformation matrix to the identity (important!)
@@ -341,6 +341,7 @@ void trapPrism(float xScale, float yScale, float zScale)
 void tireAndCasing(boolean frOrBl)
 {
   final int EXTEND_DISTANCE = 6; //stage 1
+  final int SHIFT_DISTANCE = 4; //stage 3
   final float ROTATE_SIDE = frOrBl ? -PI / 10 : PI / 10; //stage 3
   final float ROTATE_DOWN = -PI / 16; //stage 3
   
@@ -348,7 +349,7 @@ void tireAndCasing(boolean frOrBl)
   
   pushMatrix();
   
-    translate(0, 0, animStage1 * EXTEND_DISTANCE);
+    translate(animStage3 * SHIFT_DISTANCE, 0, animStage1 * EXTEND_DISTANCE);
     rotate(animStage3 * ROTATE_SIDE, 0, 1, 0);
     rotate(animStage3 * ROTATE_DOWN, 1, 0, 0);
     
