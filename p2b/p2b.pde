@@ -38,7 +38,7 @@ final int STAGE_3_DURATION = 600;
 final int STAGE_4_DURATION = 600;
 
 //fire 3 volleys
-final int FIRE_DURATION = 500;
+final int FIRE_DURATION = 300;
 final int FIRE_COOLDOWN_DURATION = 1500;
 
 final int BUNKER_DESTROY_DURATION = 3000;
@@ -228,7 +228,7 @@ void draw() {
     -500 + 500 * animCameraMove + 100 * animCameraMove3 - 600 * animCameraReturnToStart,
     
     //up
-    .1 * cameraTilt * tiltVector.x, .1 * cameraTilt * tiltVector.y + 1.0, .1 * cameraTilt * tiltVector.z);
+    .2 * cameraTilt * tiltVector.x, .2 * cameraTilt * tiltVector.y + 1.0, .2 * cameraTilt * tiltVector.z);
   
   pushMatrix();
   beginShape();
@@ -254,7 +254,7 @@ void draw() {
   pushMatrix();
     
     //ground
-    fill(0xFF00FF00); //green
+    fill(0xFF008800); //green
     pushMatrix();
       translate(0, 1, 0);
       rectPrism(2000, 2, 2000);
@@ -612,7 +612,7 @@ void gun()
   final float GUN_ROTATION = -PI; //stage2
   final int DECORATION_EXTEND_DISTANCE = 10; //stage2
   final float GUN_LIFT = PI / 12; //stage4
-  final float FIRE_MIN_RADIUS = 2;
+  final float FIRE_MIN_RADIUS = 8;
   final float FIRE_MAX_RADIUS = 15;
   
   pushMatrix();
