@@ -1,5 +1,7 @@
-// 3D Siege Tank
+// Siege Tank vs Bunker
 // Author: Andrew Smith
+
+// This scene instances 3 siege tanks that approach a bunker, enter siege mode, kill the bunker, exit siege mode, then move away.
 
 import processing.opengl.*;
 
