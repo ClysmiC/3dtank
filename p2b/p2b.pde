@@ -3,6 +3,8 @@
 
 import processing.opengl.*;
 
+PImage titleImage;
+
 float lastFreeRotateTime = 0;
 final int CAMERA_DISTANCE = 150;
 
@@ -13,7 +15,9 @@ boolean animForward = true;
 
 final int PRIMARY_COLOR = 0xFFB0B0B0;
 final int SECONDARY_COLOR = 0xFF3232F0;
+final int ENEMY_SECONDARY_COLOR = 0xFFF03232;
 final int TIRE_COLOR = 0xFF222222;
+final int BUNKER_COLOR = 0xFF2A2A2A;
 
 //animation takes place in 3 stages
 //stage 1: legs extend
@@ -21,6 +25,12 @@ final int TIRE_COLOR = 0xFF222222;
 //stage 3: legs turn and lift everything up, gun extends
 //stage 4: lift gun angle
 
+
+final int START_DURATION = 1000;
+final int CAMERA_MOVE_DURATION = 4000;
+final int CAMERA_MOVE_2_DURATION = 4000;
+final int TANK_MOVE_DURATION = 4000;
+final int TANK_ROTATE_DURATION = 500;
 final int STAGE_1_DURATION = 400; //milliseconds
 final int STAGE_2_DURATION = 800; //milliseconds
 final int STAGE_3_DURATION = 600; //milliseconds
@@ -28,15 +38,21 @@ final int STAGE_4_DURATION = 600; //milliseconds
 
 PFont font;
 
-int animStartTime;
+int startTime;
 
 //progress from 0-1
+float animStart;
+float animCameraMove;
+float animCameraMove2;
+float animTankMove;
+float animTankRotate;
 float animStage1;
 float animStage2;
 float animStage3;
 float animStage4;
 
-void setup() {
+void setup()
+{
   size(700, 700, P3D);  // must use 3D here !!!
   noStroke();           // do not draw the edges of polygons
   
@@ -44,8 +60,20 @@ void setup() {
   textFont(font);
   textSize(4);
   
+  titleImage = loadImage("title.jpg");
+  
+  if(titleImage == null)
+  {
+    System.out.println("Failed to load title image");
+  }
+  
   animForward = true;
-  animStartTime = -1;
+  startTime = -1;
+  animStart = 0;
+  animCameraMove = 0;
+  animCameraMove2 = 0;
+  animTankMove = 0;
+  animTankRotate = 0;
   animStage1 = 0;
   animStage2 = 0;
   animStage3 = 0;
@@ -53,53 +81,42 @@ void setup() {
 }
 
 //allow for arbitrary rotation except for Z axis (better for viewing)
-void mousePressed()
-{
-  mouseDown = true;
-}
+//void mousePressed()
+//{
+//  mouseDown = true;
+//}
 
-void mouseReleased()
-{
-  mouseDown = false;
-}
+//void mouseReleased()
+//{
+//  mouseDown = false;
+//}
 
 void keyPressed()
 {
-  //resets camera
-  if (key == ' ')
-  {
-    xRotate = -PI/9;
-    yRotate = PI/6;
-  }
-  else if (key == 'a')
-  {
-    animForward = true;
-    animStartTime = millis();
-  }
-  else if (key == 's')
-  {
-    animForward = false;
-    animStartTime = millis();
-  }
+ //resets camera
+ if (key == ' ')
+ {
+   startTime = millis();
+ }
 }
 
-void rotateDueToMouse()
-{
-  if(mouseDown && millis() - lastFreeRotateTime >= 10)
-  {
-    //location of click where origin is center of screen
-    int xLoc = mouseX - width / 2;
-    int yLoc = -(mouseY - height / 2);
+//void rotateDueToMouse()
+//{
+//  if(mouseDown && millis() - lastFreeRotateTime >= 10)
+//  {
+//    //location of click where origin is center of screen
+//    int xLoc = mouseX - width / 2;
+//    int yLoc = -(mouseY - height / 2);
     
-    yRotate += (xLoc / 5000f);
-    xRotate += (yLoc / 5000f);
+//    yRotate += (xLoc / 5000f);
+//    xRotate += (yLoc / 5000f);
     
-    lastFreeRotateTime = millis();
-  }
+//    lastFreeRotateTime = millis();
+//  }
   
-  rotate(xRotate, 1, 0, 0);
-  rotate(yRotate, 0, 1, 0);
-}
+//  rotate(xRotate, 1, 0, 0);
+//  rotate(yRotate, 0, 1, 0);
+//}
 
 void draw() {
   
@@ -107,26 +124,29 @@ void draw() {
 
   background(0);  // clear the screen to black
   
-  if(animStartTime == -1)
+  if(startTime == -1)
   {
-    //animation hasn't started
-    animStage1 = 0;
-    animStage2 = 0;
-    animStage3 = 0;
   }
   else
   {
-    int elapsedTime = millis() - animStartTime;
+    int elapsedTime = millis() - startTime;
     
     if(!animForward)
     {
       elapsedTime = STAGE_1_DURATION + STAGE_2_DURATION + STAGE_3_DURATION + STAGE_4_DURATION - elapsedTime;
     }
     
-    animStage1 = Math.max(0, Math.min(1, (float)elapsedTime / STAGE_1_DURATION));
-    animStage2 = Math.max(0, Math.min(1, ((float)elapsedTime - STAGE_1_DURATION) / STAGE_2_DURATION));
-    animStage3 = Math.max(0, Math.min(1, ((float)elapsedTime - STAGE_1_DURATION - STAGE_2_DURATION) / STAGE_3_DURATION));
-    animStage4 = Math.max(0, Math.min(1, ((float)elapsedTime - STAGE_1_DURATION - STAGE_2_DURATION - STAGE_3_DURATION) / STAGE_4_DURATION));
+    animStart = Math.max(0, Math.min(1, (float)elapsedTime / START_DURATION));
+    animCameraMove = Math.max(0, Math.min(1, ((float)elapsedTime - START_DURATION) / CAMERA_MOVE_DURATION));
+    animCameraMove = Math.max(0, Math.min(1, ((float)elapsedTime - START_DURATION - CAMERA_MOVE_DURATION) / CAMERA_MOVE_2_DURATION));
+    animTankMove = Math.max(0, Math.min(1, ((float)elapsedTime - START_DURATION - CAMERA_MOVE_DURATION - CAMERA_MOVE_2_DURATION) / TANK_MOVE_DURATION));
+    animTankRotate =  Math.max(0, Math.min(1, ((float)elapsedTime - START_DURATION - CAMERA_MOVE_DURATION - CAMERA_MOVE_DURATION - TANK_MOVE_DURATION) / TANK_ROTATE_DURATION));
+    
+    int preSiegeDuration = START_DURATION + CAMERA_MOVE_DURATION + CAMERA_MOVE_DURATION + TANK_MOVE_DURATION;
+    animStage1 = Math.max(0, Math.min(1, ((float)elapsedTime - preSiegeDuration) / STAGE_1_DURATION));
+    animStage2 = Math.max(0, Math.min(1, ((float)elapsedTime - preSiegeDuration - STAGE_1_DURATION) / STAGE_2_DURATION));
+    animStage3 = Math.max(0, Math.min(1, ((float)elapsedTime - preSiegeDuration - STAGE_1_DURATION - STAGE_2_DURATION) / STAGE_3_DURATION));
+    animStage4 = Math.max(0, Math.min(1, ((float)elapsedTime - preSiegeDuration - STAGE_1_DURATION - STAGE_2_DURATION - STAGE_3_DURATION) / STAGE_4_DURATION));
   }
   
   
@@ -134,9 +154,21 @@ void draw() {
   perspective (PI * 0.333, 1.0, 0.01, 1000.0);
   
   // place the camera in the scene (just like gluLookAt())
-  camera (0, 0, CAMERA_DISTANCE, 0.0, 0.0, 0, 0.0, 1.0, 0.0);
+  camera (0 - 100 * animCameraMove, -100 + 50 * animCameraMove, -200 + 100 * animCameraMove, 0, -100 + 50 * animCameraMove, -500 + 500 * animCameraMove, 0.0, 1.0, 0.0);
   
-    
+  pushMatrix();
+  beginShape();
+  texture(titleImage);
+  vertex(-50, -75, -300, 0, 400);
+  vertex(50, -75, -300, 800, 400);
+  vertex(50, -125, -300, 800, 0);
+  vertex(-50, -125, -300, 0, 0);
+  //rectPrism(40, 40, 1);
+  endShape();
+  popMatrix();
+  
+  //image(titleImage, width/2, height/2);
+  
   // create an ambient light source
   ambientLight (102, 102, 102);
   
@@ -147,53 +179,28 @@ void draw() {
   
   //rotate EVERYTHING by xRotate and yRotate, to allow for arbitrary-ish rotation by user
   pushMatrix();
-    rotateDueToMouse();
     
     //ground
     fill(0xFF00FF00); //green
     pushMatrix();
       translate(0, 1, 0);
-      rectPrism(10000, 2, 10000);
+      rectPrism(2000, 2, 2000);
     popMatrix();
     
+    //sky (note: camera is "inside" sky-box)
+    fill(0xFF4444FF);
+    sphere(700);
+    //rectPrism(1000, 1000, 1000);
+    
     pushMatrix();
-      translate(0, -5, 0);
+      translate(0, -5, 0); //get off ground
       siegeTank();
     popMatrix();
     
-    ////bunker base
-    //pushMatrix();
-    
-    //  translate(0, -5, 0);
-    //  rectPrism(50, 10, 50);
-      
-    //  //ramps
-    //  pushMatrix();
-    //    translate(-15, 0, 0);
-    //    trapPrism(20, 10, 30);
-    //  popMatrix();
-    //  pushMatrix();
-    //    translate(15, 0, 0);
-    //    trapPrism(20, 10, 30);
-    //  popMatrix();
-    //  pushMatrix();
-    //    translate(0, 0, -15);
-    //    rotate(PI/2, 0, 1, 0);
-    //    trapPrism(20, 10, 30);
-    //  popMatrix();
-    //  pushMatrix();
-    //    translate(0, 0, 15);
-    //    rotate(PI/2, 0, 1, 0);
-    //    trapPrism(20, 10, 30);
-    //  popMatrix();
-    
-    //  //round top
-    //  pushMatrix();
-    //    translate(0, 0, 0);
-    //    sphere(20);
-    //  popMatrix();
-    
-    //popMatrix();
+    pushMatrix();
+      translate(100, -10, 100); //get off ground
+      bunker();
+    popMatrix();
   
   //pop rotation matrix
   popMatrix();
@@ -568,9 +575,66 @@ void gun()
   popMatrix();
 }
 
+void bunker()
+{
+  fill(BUNKER_COLOR);
+  pushMatrix();
+  
+     rectPrism(70, 20, 70);
+    
+    //ramps
+    pushMatrix();
+      translate(-20, 0, 0);
+      trapPrism(30, 20, 40);
+    popMatrix();
+    pushMatrix();
+      translate(20, 0, 0);
+      trapPrism(30, 20, 40);
+    popMatrix();
+    pushMatrix();
+      translate(0, 0, -20);
+      rotate(PI/2, 0, 1, 0);
+      trapPrism(30, 20, 40);
+    popMatrix();
+    pushMatrix();
+      translate(0, 0, 20);
+      rotate(PI/2, 0, 1, 0);
+      trapPrism(30, 20, 40);
+    popMatrix();
+    
+    //red emblems
+    fill(ENEMY_SECONDARY_COLOR);
+    pushMatrix();
+      translate(-32, 0, -32);
+      rectPrism(10, 23, 10);
+    popMatrix();
+    pushMatrix();
+      translate(32, 0, -32);
+      rectPrism(10, 23, 10);
+    popMatrix();
+    pushMatrix();
+      translate(32, 0, 32);
+      rectPrism(10, 23, 10);
+    popMatrix();
+    pushMatrix();
+      translate(-32, 0, 32);
+      rectPrism(10, 23, 10);
+    popMatrix();
+  
+  
+    fill(BUNKER_COLOR);
+   //round top
+   pushMatrix();
+     translate(0, 0, 0);
+     sphere(30);
+   popMatrix();
+  
+  popMatrix();
+}
+
 void siegeTank()
 {
-  int SHIFT_UP_DISTANCE = -2; //prevents rotated tires from clipping into ground
+  int SHIFT_UP_DISTANCE = -3; //prevents rotated tires from clipping into ground
   pushMatrix();
     translate(0, animStage3 * SHIFT_UP_DISTANCE, 0);
     
@@ -622,14 +686,14 @@ void siegeTank()
       
       //right brace
       pushMatrix();
-        translate(-10, -2, 0);
+        translate(-10, -2 - animStage3 * 1, 0);
         rotate(-PI/2, 0, 0, 1);
         brace();
       popMatrix();
       
       //left brace
       pushMatrix();
-        translate(10, -2, 0);
+        translate(10, -2 - animStage3 * 1, 0);
         rotate(PI/2, 0, 0, 1);
         rotate(PI, 0, 1, 0);
         brace();
