@@ -21,10 +21,10 @@ final int TIRE_COLOR = 0xFF222222;
 //stage 3: legs turn and lift everything up, gun extends
 //stage 4: lift gun angle
 
-final int STAGE_1_DURATION = 500; //milliseconds
-final int STAGE_2_DURATION = 1000; //milliseconds
-final int STAGE_3_DURATION = 750; //milliseconds
-final int STAGE_4_DURATION = 750; //milliseconds
+final int STAGE_1_DURATION = 400; //milliseconds
+final int STAGE_2_DURATION = 800; //milliseconds
+final int STAGE_3_DURATION = 600; //milliseconds
+final int STAGE_4_DURATION = 600; //milliseconds
 
 PFont font;
 
@@ -148,7 +148,52 @@ void draw() {
   //rotate EVERYTHING by xRotate and yRotate, to allow for arbitrary-ish rotation by user
   pushMatrix();
     rotateDueToMouse();
-    siegeTank();
+    
+    //ground
+    fill(0xFF00FF00); //green
+    pushMatrix();
+      translate(0, 1, 0);
+      rectPrism(10000, 2, 10000);
+    popMatrix();
+    
+    pushMatrix();
+      translate(0, -5, 0);
+      siegeTank();
+    popMatrix();
+    
+    ////bunker base
+    //pushMatrix();
+    
+    //  translate(0, -5, 0);
+    //  rectPrism(50, 10, 50);
+      
+    //  //ramps
+    //  pushMatrix();
+    //    translate(-15, 0, 0);
+    //    trapPrism(20, 10, 30);
+    //  popMatrix();
+    //  pushMatrix();
+    //    translate(15, 0, 0);
+    //    trapPrism(20, 10, 30);
+    //  popMatrix();
+    //  pushMatrix();
+    //    translate(0, 0, -15);
+    //    rotate(PI/2, 0, 1, 0);
+    //    trapPrism(20, 10, 30);
+    //  popMatrix();
+    //  pushMatrix();
+    //    translate(0, 0, 15);
+    //    rotate(PI/2, 0, 1, 0);
+    //    trapPrism(20, 10, 30);
+    //  popMatrix();
+    
+    //  //round top
+    //  pushMatrix();
+    //    translate(0, 0, 0);
+    //    sphere(20);
+    //  popMatrix();
+    
+    //popMatrix();
   
   //pop rotation matrix
   popMatrix();
@@ -514,7 +559,7 @@ void gun()
       
       //black protrusion from end of gun
       pushMatrix();
-        translate(0, -2, 41 + animStage3 * DECORATION_EXTEND_DISTANCE * .5);
+        translate(0, -2, 41);
         rectPrism(16, 2, 10);
       popMatrix();
     
@@ -525,71 +570,75 @@ void gun()
 
 void siegeTank()
 {
-  //front right tire
+  int SHIFT_UP_DISTANCE = -2; //prevents rotated tires from clipping into ground
   pushMatrix();
-    translate(-20, 0, 30);
-    tireAndCasing(true);
-  popMatrix();
-  
-  //front left tire
-  pushMatrix();
-    translate(20, 0, 30);
-    tireAndCasing(false);
-  popMatrix();
-  
-  //back right tire
-  pushMatrix();
-    translate(-20, 0, -30);
-    rotate(PI, 0, 1, 0);
-    tireAndCasing(false);
-  popMatrix();
-  
-  //back left tire
-  pushMatrix();
-    translate(20, 0, -30);
-    rotate(PI, 0, 1, 0);
-    tireAndCasing(true);
-  popMatrix();
-  
-  final int LIFT_DISTANCE = -4; //stage 3
-  pushMatrix();
-    translate(0, animStage3 * LIFT_DISTANCE, 0);
+    translate(0, animStage3 * SHIFT_UP_DISTANCE, 0);
     
-    //flat hex prism connecting wheels
-    fill(PRIMARY_COLOR);
+    //front right tire
     pushMatrix();
-      translate(0, -5, 0);
-      rotate(PI/2, 1, 0, 0);
-      rotate(2 * PI / 12f, 0, 0, 1);
-      hexPrism(25, 25, 8);
+      translate(-20, 0, 30);
+      tireAndCasing(true);
     popMatrix();
     
-    //long hex prism between front and back tires
+    //front left tire
     pushMatrix();
-      translate(0, -4, 0);
-      rotate(PI/2, 0, 1, 0);
-      hexPrism(42, 8, 24);
+      translate(20, 0, 30);
+      tireAndCasing(false);
     popMatrix();
     
-    //right brace
+    //back right tire
     pushMatrix();
-      translate(-10, -2, 0);
-      rotate(-PI/2, 0, 0, 1);
-      brace();
+      translate(-20, 0, -30);
+      rotate(PI, 0, 1, 0);
+      tireAndCasing(false);
     popMatrix();
     
-    //left brace
+    //back left tire
     pushMatrix();
-      translate(10, -2, 0);
-      rotate(PI/2, 0, 0, 1);
-      scale(-1, 1, 1); //reflect x
-      brace();
+      translate(20, 0, -30);
+      rotate(PI, 0, 1, 0);
+      tireAndCasing(true);
     popMatrix();
     
+    final int LIFT_DISTANCE = -4; //stage 3
     pushMatrix();
-      translate(0, -18, 0);
-      gun();
+      translate(0, animStage3 * LIFT_DISTANCE, 0);
+      
+      //flat hex prism connecting wheels
+      fill(PRIMARY_COLOR);
+      pushMatrix();
+        translate(0, -5, 0);
+        rotate(PI/2, 1, 0, 0);
+        rotate(2 * PI / 12f, 0, 0, 1);
+        hexPrism(25, 25, 8);
+      popMatrix();
+      
+      //long hex prism between front and back tires
+      pushMatrix();
+        translate(0, -4, 0);
+        rotate(PI/2, 0, 1, 0);
+        hexPrism(42, 8, 24);
+      popMatrix();
+      
+      //right brace
+      pushMatrix();
+        translate(-10, -2, 0);
+        rotate(-PI/2, 0, 0, 1);
+        brace();
+      popMatrix();
+      
+      //left brace
+      pushMatrix();
+        translate(10, -2, 0);
+        rotate(PI/2, 0, 0, 1);
+        rotate(PI, 0, 1, 0);
+        brace();
+      popMatrix();
+      
+      pushMatrix();
+        translate(0, -18, 0);
+        gun();
+      popMatrix();
     popMatrix();
-  
   popMatrix();
 }
